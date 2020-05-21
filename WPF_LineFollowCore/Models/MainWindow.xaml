@@ -1,0 +1,145 @@
+﻿<Window x:Class="WPF_LineFollowCore.MainWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:local="clr-namespace:WPF_LineFollowCore"
+        mc:Ignorable="d"
+        Title="MainWindow" Height="450" Width="800">
+    <Grid>
+       <Grid.RowDefinitions>
+            <!--Menu Row-->
+            <RowDefinition Height="20"/>
+            <!--Map Row-->
+            <RowDefinition Height="*"/>
+            <!--Footer Row-->
+            <RowDefinition Height="25"/>
+        </Grid.RowDefinitions>         
+        <Menu Width="Auto" Height="20" Background="AntiqueWhite" Grid.Row="0" Panel.ZIndex="9">
+            <MenuItem Header="Mode">
+                <MenuItem Header="Production" IsChecked="{Binding ProductionMode}">
+                    <MenuItem.InputBindings>
+                        <MouseBinding Command="{Binding ChangeToProductionModeCommand}" MouseAction="LeftClick"/>
+                    </MenuItem.InputBindings>
+                </MenuItem>
+                <MenuItem Header="Traffic Setup" IsChecked="{Binding TrafficSetupMode}" IsEnabled="{Binding Security}">
+                    <MenuItem.InputBindings>
+                        <MouseBinding Command="{Binding ChangeToTrafficSetupModeCommand}" MouseAction="LeftClick"/>
+                    </MenuItem.InputBindings>
+                </MenuItem>
+                <MenuItem Header="Staging Setup" IsChecked="{Binding StagingSetupMode}" IsEnabled="{Binding Security}">
+                    <MenuItem.InputBindings>
+                        <MouseBinding Command="{Binding ChangeToStagingSetupModeCommand}" MouseAction="LeftClick"/>
+                    </MenuItem.InputBindings>
+                </MenuItem>
+                <MenuItem Header="Start Lock Setup" IsChecked="{Binding StartLockSetupMode}" IsEnabled="{Binding Security}">
+                    <MenuItem.InputBindings>
+                        <MouseBinding Command="{Binding ChangeToStartLockSetupModeCommand}" MouseAction="LeftClick"/>
+                    </MenuItem.InputBindings>
+                </MenuItem>
+                <MenuItem Header="Layout Management" IsChecked="{Binding LayoutManagementMode}">
+                    <MenuItem.InputBindings>
+                        <MouseBinding Command="{Binding ChangeToLayoutManagementModeCommand}" MouseAction="LeftClick"/>
+                    </MenuItem.InputBindings>
+                </MenuItem>
+            </MenuItem>
+            <MenuItem Header="View Options">
+                <MenuItem Header="Show AGVs" IsCheckable="True" IsChecked="{Binding CurrentLayout.ShowAGVs}"/>
+                <MenuItem Header="Show RFIDs" IsCheckable="True" IsChecked="{Binding CurrentLayout.ShowRFIDs}"/>
+                <MenuItem Header="Show Traffic Lights" IsCheckable="True" IsChecked="{Binding CurrentLayout.ShowTrafficLights}"/>
+                <MenuItem Header="Show Battery Monitor" IsCheckable="True" IsChecked="{Binding CurrentLayout.ShowBatteryMonitor}"/>
+                <MenuItem Header="Show Fault Banner" IsCheckable="True" IsChecked="{Binding CurrentLayout.ShowFaultBanner}"/>
+                <MenuItem Header="Show Legend" IsCheckable="True" IsChecked="{Binding CurrentLayout.ShowLegend}"/>
+                <Separator/>
+                <MenuItem Header="Adjust Current Scale" Command="{Binding AdjustLayoutScaleCommand}"/>
+                <Separator/>
+                <MenuItem Header="Saved Layouts" Name="LayoutsMenu" ItemsSource="{Binding SavedLayouts}">
+
+                    <MenuItem.ItemContainerStyle>
+                        <Style TargetType="MenuItem">
+                            <Setter Property="Header" Value="{Binding Name}" />
+                            <Setter Property="Command" Value="{Binding RelativeSource={RelativeSource Mode=FindAncestor, AncestorType=Window}, Path=DataContext.SelectLayoutCommand, Mode=OneWay}"/>
+                            <Setter Property="CommandParameter" Value="{Binding }" />
+                        </Style>
+                    </MenuItem.ItemContainerStyle>
+
+                </MenuItem>
+                <MenuItem Header="Manage Saved Layouts" Command="{Binding OpenLayoutManagementCommand}"/>
+            </MenuItem>
+
+            <MenuItem Header="Communications" IsEnabled="{Binding Security}">
+                <MenuItem Header="AGV Communications Status" Command="{Binding OpenAGVCommServerManagementCommand}"/>
+            </MenuItem>
+            <MenuItem Header="AdminTools" IsEnabled="{Binding Security}" >
+                <MenuItem Header="Set Log Level" Command="{Binding OpenAdminToolsCommand}"/>
+                <MenuItem Header="Current Error Timers View" Command="{Binding OpenErrorViewerCommand}"/>
+                <MenuItem Header="Cycle Timers">
+                    <MenuItem Header="Cycle Timer Setup" Command="{Binding OpenCycleManagementCommand}"/>
+                    <MenuItem Header="Cycle Timer View" Command="{Binding OpenCycleViewerCommand}"/>
+                </MenuItem>
+                </MenuItem>
+                <MenuItem Header="Security" Click="MenuItem_Click" >
+                <StackPanel Margin="10">
+                    <Grid>
+                        <Label Content="Password:"/>
+                        <!--security-->
+                        <TextBlock FontWeight="Bold" Text="Login" Padding="5" Background="LightGray" HorizontalAlignment="Right" Width="80"/>
+                        <Button HorizontalAlignment="Right" Width="24">
+                            <Button.Template>
+                                <ControlTemplate>
+                                    <Ellipse Width="15" Height="15" Margin="4,2">
+                                        <Ellipse.Style>
+                                            <Style TargetType="{x:Type Ellipse}" >
+                                                <Style.Triggers>
+                                                    <DataTrigger Binding="{Binding Security}" Value="True">
+                                                        <Setter Property="Fill" Value="{Binding Source={StaticResource GreenNWLightGradient}}"/>
+                                                    </DataTrigger>
+                                                    <DataTrigger Binding="{Binding Security}" Value="False">
+                                                        <Setter Property="Fill" Value="{Binding Source={StaticResource RedNWLightGradient}}"/>
+                                                    </DataTrigger>
+                                                </Style.Triggers>
+                                            </Style>
+                                        </Ellipse.Style>
+                                    </Ellipse>
+                                </ControlTemplate>
+                            </Button.Template>
+                        </Button>
+                    </Grid>
+                    <PasswordBox x:Name="tbxPassword"  KeyDown="TbxPassword_KeyDown"/>
+                    <Grid>
+                        <Grid.ColumnDefinitions>
+                            <!--Add Button-->
+                            <ColumnDefinition Width="*"/>
+                            <!--Add Button-->
+                            <ColumnDefinition Width="*"/>
+                        </Grid.ColumnDefinitions>
+                        <Button x:Name="btnLogin" Grid.Column="0"  
+            				ToolTip="Click here to login"  
+            				HorizontalAlignment="Center" 
+            				VerticalAlignment="Center" 
+            				MinWidth="100" Margin="5"
+            				IsDefault="True"
+            				Command="{Binding SecurityLoginCommand}"
+            				Click="Button_Click"
+                        Content="Log in"
+                        />
+
+                        <Button Grid.Column="1"
+            				ToolTip="Click here to login" 
+            				HorizontalAlignment="Center" 
+            				VerticalAlignment="Center" 
+            				MinWidth="100" Margin="5"
+            				Command="{Binding SecurityLogoutCommand}"
+            				Click="Button_Click_1"
+                        Content="Log out"
+                        />
+                    </Grid>
+
+                </StackPanel>
+            </MenuItem>
+
+        </Menu>
+
+
+    </Grid>
+</Window>

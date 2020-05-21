@@ -1,0 +1,43 @@
+﻿<UserControl x:Class="UIElements.GridViewUserControl"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+             mc:Ignorable="d" 
+             d:DesignHeight="300" d:DesignWidth="300">
+    <Grid x:Name="ThisControlGrid" Width="auto" Height="auto" MinHeight="40" MinWidth="100">
+        <Grid.RowDefinitions>
+            <!--Used to move the grid around-->
+            <RowDefinition Height="20" />
+            <!--Contains the grid-->
+            <RowDefinition Height="*" />
+            <!--Used to resize the grid-->
+            <RowDefinition Height="20" />
+        </Grid.RowDefinitions>
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="*" />
+        </Grid.ColumnDefinitions>
+        <!--Header used for panning-->
+        <Border x:Name="Header" Grid.Row="0" BorderBrush="LightGray" BorderThickness="1" Background="LightGray"
+                Padding="10,0,0,0"
+                CornerRadius="4,4,0,0">
+            <TextBlock FontWeight="Bold">AGV Data Table</TextBlock>
+        </Border>
+        <!--Data Grid-->
+        <!--
+        <Border Grid.Row="1" Child="{Binding ControlDataGrid, UpdateSourceTrigger=PropertyChanged, Mode=TwoWay}" />
+        -->
+        <DataGrid x:Name="ControlDataGrid" 
+                  ItemsSource="{Binding GridItemSource}"
+                  CanUserAddRows="False"
+                  CanUserDeleteRows="False"
+                  IsReadOnly="True"
+                  Grid.Row="1" 
+                  Width="auto" 
+                  Height="auto" 
+                  HorizontalAlignment="Stretch" 
+                  VerticalAlignment="Stretch" />
+        <!--Footer used for resizing-->
+        <Border x:Name="Footer" Grid.Row="2" Background="LightGray" BorderBrush="LightGray" BorderThickness="1" CornerRadius="0,0,4,4"></Border>
+    </Grid>
+</UserControl>
